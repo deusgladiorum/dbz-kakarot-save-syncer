@@ -1,20 +1,18 @@
 DBZ Kakarot Save Syncer @VERSION@
 
-DRAGON BALL Z: KAKAROT on Steam has a standard build and an HD build, and each keeps its own
-saves. This plugin keeps them in step: when one build saves, the same slot is written in the
-other build's format, and at game start any newer save from the other build is brought over.
+A mod for DRAGON BALL Z: KAKAROT on Steam that automatically keeps your saves in-sync between
+the standard and HD versions of the game, even across devices. Play one version, and your
+saves appear in the other. No manual "Transfer Save Data" needed.
 
 INSTALL
 1. Back up your saves: Steam\userdata\<your Steam id>\851850\remote
-2. Copy dbz-kakarot-save-syncer.asi and xinput1_3.dll into the exe folder of the build you
-   play on Windows:
-     Standard: ...\DRAGON BALL Z KAKAROT\AT\Binaries\Win64\
-     HD:       ...\DRAGON BALL Z KAKAROT\dlc\Remaster\AT\Binaries\Win64\
+2. Extract all the files from the zip into the HD version's folder:
+     ...\DRAGON BALL Z KAKAROT\dlc\Remaster\AT\Binaries\Win64\
    If that folder already has Ultimate ASI Loader as xinput1_3.dll, keep the one there.
-3. Make sure Steam Cloud is enabled for the game (game Properties > General in Steam).
-One install on one Windows machine is enough. The other device (for example a Steam Deck)
-needs nothing: it receives the saves through Steam Cloud. Installing into both build folders
-also works.
+Steam Cloud must be enabled for the game (it is by default; see game Properties > General).
+A Steam Deck or second PC that plays the standard version needs nothing installed: it receives
+the saves through Steam Cloud. If you only play the standard version on Windows, install into
+...\DRAGON BALL Z KAKAROT\AT\Binaries\Win64\ instead.
 
 LOG
 dbz-kakarot-save-syncer.log, in the same folder as the .asi.

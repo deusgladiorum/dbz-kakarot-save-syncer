@@ -1,28 +1,48 @@
-# dbz-kakarot-save-syncer
+# Dragon Ball Z Kakarot Save Syncer
 
-An ASI plugin for DRAGON BALL Z: KAKAROT on Steam that keeps the standard build's and the HD
-build's saves in step, so a game saved in either build can be continued in the other, on the
-same PC or on another device through Steam Cloud, with no manual transfer.
+A mod for DRAGON BALL Z: KAKAROT on Steam that automatically keeps your saves in-sync between
+the standard and HD versions of the game, even across devices.
+
+Wished you could play the HD version on your PC and the standard version on your Steam Deck or
+another device? Now you can, and no manual "Transfer Save Data" button needed. Set it and
+forget it.
+
+## Quick install
+
+1. Go to the [Releases page](https://github.com/deusgladiorum/dbz-kakarot-save-syncer/releases)
+   and download the latest `dbz-kakarot-save-syncer-<version>.zip`.
+2. Extract all of its contents into the HD version's folder:
+   `...\steamapps\common\DRAGON BALL Z KAKAROT\dlc\Remaster\AT\Binaries\Win64\`
+
+That's it. Play either version as normal. Steam Cloud must be enabled for the game, which it is
+by default. A Steam Deck or second PC that plays the standard version needs nothing installed.
+
+To uninstall, delete `dbz-kakarot-save-syncer.asi` and `xinput1_3.dll` from that folder. Your
+saves are never touched by uninstalling.
+
+If a save ever refuses to load or save after a Steam update, fully exit and restart Steam.
 
 ## How it works
 
-The plugin is loaded into the game by Ultimate ASI Loader and hooks the game's Steam Remote
-Storage calls. When the game writes a save slot, the plugin converts it to the other build's
-format and writes it, and its save-list entry, through the same Remote Storage session, so
-Steam's index and Steam Cloud see the result. At startup it compares each slot's save time in
-the two builds and brings the older side up to date. It never deletes a save. The design is
-in [`docs/design.html`](docs/design.html); the save mechanism reference (file format,
-encryption, how the game saves, loads and transfers) is in
+The game stores both versions' saves in the same Steam Cloud folder, and the HD version already
+knows how to convert a standard save into its own format. The mod does that conversion
+automatically, in both directions, every time you save.
+
+![Topology: a Windows PC running HD with the mod, Steam Cloud in the middle, a Steam Deck running the untouched standard build](docs/topology.svg)
+
+It is loaded into the game by Ultimate ASI Loader and hooks the game's Steam Remote Storage
+calls. When the game writes a save slot, the mod converts it to the other version's format and
+writes it, and its save-list entry, through the same Remote Storage session, so Steam's index
+and Steam Cloud see the result. At startup it compares each slot's save time in the two
+versions and brings the older side up to date. It never deletes a save.
+
+## Developer details
+
+The design is in [`docs/design.html`](docs/design.html); the save mechanism reference (file
+format, encryption, how the game saves, loads and transfers) is in
 [`docs/save-mechanism.html`](docs/save-mechanism.html).
 
-## Install
-
-Download `dbz-kakarot-save-syncer-<version>.zip`, extract it, and follow `INSTALL.txt` inside.
-In short: copy `dbz-kakarot-save-syncer.asi` and `xinput1_3.dll` into the exe folder of the
-build you play on Windows. Nothing else is needed: the `.asi` is linked against the static C++
-runtime, so no Visual C++ redistributable is required.
-
-## Build
+### Build
 
 Requirements: Visual Studio 2026 (version 18) with the Desktop development with C++ workload
 (toolset v145, a Windows 10 SDK or later). Only x64 is supported.
@@ -34,12 +54,12 @@ Requirements: Visual Studio 2026 (version 18) with the Desktop development with 
 Outputs go to `x64\Release\` (`x64\Debug\` for Debug): `dbz-kakarot-save-syncer.asi`,
 `kakarot_cli.exe` and `plugin_test.exe`.
 
-## Test
+### Test
 
 Both test programs need a copy of the game's standard-build exe (the AES key is read from it)
 and a folder of save backups. Neither writes to the game folder or the backups folder.
 
-### Plugin tests
+#### Plugin tests
 
 ```
 x64\Release\plugin_test.exe --exe STANDARD_EXE --fixtures BACKUPS_DIR [--scratch DIR] [--cli KAKAROT_CLI]
@@ -54,7 +74,7 @@ x64\Release\plugin_test.exe --exe STANDARD_EXE --fixtures BACKUPS_DIR [--scratch
 It prints one `PASS`/`FAIL` line per case and exits non-zero if any case fails.
 `plugin/README.md` describes what the cases cover.
 
-### Oracle test
+#### Oracle test
 
 The oracle test checks that `kakarot_cli.exe` produces byte-identical output to the Python
 tools in `tools/`. Set up the Python environment once:
@@ -80,7 +100,7 @@ Then run:
 The backup sets each test expects are named at the top of `tools/oracle_test.py` and
 `plugin_test/main.cpp`.
 
-## Package
+### Package
 
 ```
 powershell -ExecutionPolicy Bypass -File tools\package.ps1 [-TestExe STANDARD_EXE] [-TestFixtures BACKUPS_DIR]
@@ -89,11 +109,11 @@ powershell -ExecutionPolicy Bypass -File tools\package.ps1 [-TestExe STANDARD_EX
 The script rebuilds Release x64, checks that the `.asi` does not depend on the C++ runtime DLLs,
 runs `plugin_test.exe` (and stops if it fails; skipped with a warning unless `KAKAROT_EXE` and
 `KAKAROT_FIXTURES` or the two parameters are set), and writes `dist\dbz-kakarot-save-syncer-<version>.zip`
-with the `.asi`, `xinput1_3.dll`, `INSTALL.txt` and `LICENSE.txt`. The version is read from
+with the `.asi`, `xinput1_3.dll`, `INSTALL.txt` and the licences. The version is read from
 `VERSION`. `INSTALL.txt` is generated from `tools/INSTALL.txt` with the version and the
 loader's version and SHA-256 filled in.
 
-## Repository layout
+### Repository layout
 
 | Folder | Contents |
 |---|---|
@@ -107,12 +127,6 @@ loader's version and SHA-256 filled in.
 
 The `.asi` project itself (`dbz-kakarot-save-syncer.vcxproj`, `dllmain.cpp`) is at the root.
 `x64/`, `obj/`, `out/` and `dist/` are build, test and packaging output and are not tracked.
-
-## The save key
-
-The AES key that encrypts the saves is not stored in this repository. The plugin, the CLI and
-the tests read it from the game's exe at runtime (the Python tools do the same with `--exe`)
-and keep it only in memory; it is never logged or printed.
 
 ## Licence
 

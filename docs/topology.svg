@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 230" width="1000" height="230" role="img" aria-label="A Windows PC running the HD build with the plugin, Steam Cloud in the middle, and a Steam Deck running the untouched standard build. The PC uploads both save formats at exit; the Deck uploads only its native standard saves; each downloads at launch.">
+  <style>
+    text { font-family: "Segoe UI", system-ui, -apple-system, sans-serif; font-size: 12px; fill: #1f2328; }
+    .t { font-size: 13px; font-weight: 600; }
+    .m { font-family: Consolas, "Courier New", monospace; font-size: 11px; }
+    .mu { fill: #5d6470; }
+    .acc { fill: #c2410c; }
+    .ok { fill: #2f7d4f; }
+    .box { fill: #ffffff; stroke: #1f2328; stroke-width: 1.2; }
+    .box-soft { fill: #f6f5f2; stroke: #c9ccd1; stroke-width: 1.2; }
+    .box-acc { fill: #fbe9df; stroke: #c2410c; stroke-width: 1.4; }
+    .wire { stroke: #1f2328; stroke-width: 1.2; fill: none; }
+  </style>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1f2328"/>
+    </marker>
+  </defs>
+  <rect width="1000" height="230" fill="#ffffff"/>
+
+  <rect class="box" x="10" y="40" width="280" height="150" rx="6"/>
+  <text class="t" x="150" y="66" text-anchor="middle">Windows PC</text>
+  <text class="mu" x="150" y="88" text-anchor="middle">HD build</text>
+  <rect class="box-acc" x="75" y="110" width="150" height="56" rx="4"/>
+  <text class="t acc" x="150" y="130" text-anchor="middle">the mod</text>
+  <text class="m acc" x="150" y="146" text-anchor="middle">hooks the save API</text>
+  <text class="m acc" x="150" y="160" text-anchor="middle">at save, load, delete</text>
+
+  <rect class="box" x="420" y="80" width="160" height="70" rx="6"/>
+  <text class="t" x="500" y="110" text-anchor="middle">Steam Cloud</text>
+  <text class="mu" x="500" y="130" text-anchor="middle">one game, one folder</text>
+
+  <rect class="box" x="710" y="40" width="280" height="150" rx="6"/>
+  <text class="t" x="850" y="66" text-anchor="middle">Steam Deck</text>
+  <text class="mu" x="850" y="88" text-anchor="middle">standard build</text>
+  <rect class="box-soft" x="775" y="110" width="150" height="56" rx="4"/>
+  <text class="t ok" x="850" y="134" text-anchor="middle">nothing installed</text>
+  <text class="m mu" x="850" y="152" text-anchor="middle">vanilla game</text>
+
+  <line class="wire" x1="290" y1="100" x2="420" y2="100" marker-end="url(#a)"/>
+  <text x="355" y="82" text-anchor="middle">uploads at exit</text>
+  <text class="mu" x="355" y="95" text-anchor="middle">both formats</text>
+  <line class="wire" x1="420" y1="130" x2="290" y2="130" marker-end="url(#a)"/>
+  <text x="355" y="149" text-anchor="middle">downloads at launch</text>
+  <text class="mu" x="355" y="162" text-anchor="middle">Deck's native saves</text>
+
+  <line class="wire" x1="580" y1="100" x2="710" y2="100" marker-end="url(#a)"/>
+  <text x="645" y="82" text-anchor="middle">downloads at launch</text>
+  <text class="mu" x="645" y="95" text-anchor="middle">standard files</text>
+  <line class="wire" x1="710" y1="130" x2="580" y2="130" marker-end="url(#a)"/>
+  <text x="645" y="149" text-anchor="middle">uploads at exit</text>
+  <text class="mu" x="645" y="162" text-anchor="middle">native saves</text>
+</svg>
