@@ -11,7 +11,7 @@
     <Platform Solution="*|x86" Project="x64" />
     <Build Solution="*|x86" Project="false" />
   </Project>
-  <Project Path="kakarot-hd-save-syncer.vcxproj" Id="fcf38bc1-f68a-4baa-ae63-a94f161ff519">
+  <Project Path="dbz-kakarot-save-syncer.vcxproj" Id="fcf38bc1-f68a-4baa-ae63-a94f161ff519">
     <Platform Solution="*|x86" Project="x64" />
     <Build Solution="*|x86" Project="false" />
   </Project>

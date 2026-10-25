@@ -1,4 +1,4 @@
-// Kakarot HD Save Syncer, ASI plugin entry point.
+// DBZ Kakarot Save Syncer, ASI plugin entry point.
 //
 // Detects the build, starts the wait thread that hooks ISteamRemoteStorage once the game's Steam
 // session is up, hands the sync logic its configuration (build, AES key, manifest path), and

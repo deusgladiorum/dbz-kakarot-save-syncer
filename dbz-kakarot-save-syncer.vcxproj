@@ -14,7 +14,7 @@
     <VCProjectVersion>18.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{fcf38bc1-f68a-4baa-ae63-a94f161ff519}</ProjectGuid>
-    <RootNamespace>kakarothdsavesyncer</RootNamespace>
+    <RootNamespace>dbzkakarotsavesyncer</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -39,7 +39,7 @@
   <PropertyGroup>
     <OutDir>$(MSBuildThisFileDirectory)x64\$(Configuration)\</OutDir>
     <IntDir>$(MSBuildThisFileDirectory)obj\$(Platform)\$(Configuration)\</IntDir>
-    <TargetName>kakarot-hd-save-syncer</TargetName>
+    <TargetName>dbz-kakarot-save-syncer</TargetName>
     <!-- The ASI loader picks up *.asi; the DLL is linked directly under that extension. -->
     <TargetExt>.asi</TargetExt>
   </PropertyGroup>

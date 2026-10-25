@@ -1,9 +1,9 @@
 <#
 .SYNOPSIS
-  Builds Release x64, runs plugin_test, and assembles dist\kakarot-hd-save-syncer-<version>.zip.
+  Builds Release x64, runs plugin_test, and assembles dist\dbz-kakarot-save-syncer-<version>.zip.
 
 .DESCRIPTION
-  The zip holds kakarot-hd-save-syncer.asi, xinput1_3.dll (Ultimate ASI Loader, from
+  The zip holds dbz-kakarot-save-syncer.asi, xinput1_3.dll (Ultimate ASI Loader, from
   third_party\UltimateASILoader), its licence as UltimateASILoader-LICENSE.txt, INSTALL.txt
   (generated from tools\INSTALL.txt) and LICENSE.txt.
   The version comes from the VERSION file at the repository root. Windows PowerShell 5.1 or later.
@@ -29,7 +29,7 @@ Set-StrictMode -Version 2.0
 $ErrorActionPreference = 'Stop'
 
 $Repo = Split-Path -Parent $PSScriptRoot
-$Name = 'kakarot-hd-save-syncer'
+$Name = 'dbz-kakarot-save-syncer'
 
 function Find-VsTool([string]$pattern) {
     $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'

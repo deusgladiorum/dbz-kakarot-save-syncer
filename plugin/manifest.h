@@ -15,8 +15,8 @@
 namespace plugin {
 namespace manifest {
 
-constexpr char kCloudName[] = "kakarot-hd-save-syncer.manifest";
-constexpr wchar_t kLocalName[] = L"kakarot-hd-save-syncer.manifest";
+constexpr char kCloudName[] = "dbz-kakarot-save-syncer.manifest";
+constexpr wchar_t kLocalName[] = L"dbz-kakarot-save-syncer.manifest";
 
 struct Entry {
     int slot = -1;

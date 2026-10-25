@@ -36,19 +36,19 @@ AES-NI when the CPU has it and the software implementation otherwise, with ident
 ## Build
 
 ```
-MSBuild.exe kakarot-hd-save-syncer.slnx /p:Configuration=Release /p:Platform=x64
+MSBuild.exe dbz-kakarot-save-syncer.slnx /p:Configuration=Release /p:Platform=x64
 ```
 
 Projects: `core/` (conversions), `plugin/kakarot_plugin.vcxproj` (this folder, a static
-library), `kakarot-hd-save-syncer.vcxproj` (the `.asi`, only `dllmain.cpp`), `cli/` and
-`plugin_test/`. Output: `x64\Release\kakarot-hd-save-syncer.asi` (`x64\Debug\...` for Debug).
+library), `dbz-kakarot-save-syncer.vcxproj` (the `.asi`, only `dllmain.cpp`), `cli/` and
+`plugin_test/`. Output: `x64\Release\dbz-kakarot-save-syncer.asi` (`x64\Debug\...` for Debug).
 
 ## Install
 
 Back up `userdata\<steam id>\851850\remote` first.
 
 1. Put the Ultimate ASI Loader in the exe folder as `xinput1_3.dll`, unless it is already there.
-2. Copy `kakarot-hd-save-syncer.asi` into the same folder:
+2. Copy `dbz-kakarot-save-syncer.asi` into the same folder:
    - Standard: `<game>\AT\Binaries\Win64\`
    - HD: `<game>\dlc\Remaster\AT\Binaries\Win64\`
 
@@ -59,9 +59,9 @@ Already-produced files stay.
 
 | File | Where | What |
 |---|---|---|
-| `kakarot-hd-save-syncer.log` | next to the `.asi` | Appended, one `session start` banner per run |
-| `kakarot-hd-save-syncer.manifest` | Remote Storage (the game's cloud folder) | The manifest |
-| `kakarot-hd-save-syncer.manifest` | next to the `.asi` | Local copy, read when the cloud copy cannot be read |
+| `dbz-kakarot-save-syncer.log` | next to the `.asi` | Appended, one `session start` banner per run |
+| `dbz-kakarot-save-syncer.manifest` | Remote Storage (the game's cloud folder) | The manifest |
+| `dbz-kakarot-save-syncer.manifest` | next to the `.asi` | Local copy, read when the cloud copy cannot be read |
 | foreign slot files and system save | Remote Storage | The converted saves |
 
 Every log line has the local time to the millisecond and the thread id. The log records each

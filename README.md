@@ -1,4 +1,4 @@
-# kakarot-hd-save-syncer
+# dbz-kakarot-save-syncer
 
 An ASI plugin for DRAGON BALL Z: KAKAROT on Steam that keeps the standard build's and the HD
 build's saves in step, so a game saved in either build can be continued in the other, on the
@@ -17,8 +17,8 @@ encryption, how the game saves, loads and transfers) is in
 
 ## Install
 
-Download `kakarot-hd-save-syncer-<version>.zip`, extract it, and follow `INSTALL.txt` inside.
-In short: copy `kakarot-hd-save-syncer.asi` and `xinput1_3.dll` into the exe folder of the
+Download `dbz-kakarot-save-syncer-<version>.zip`, extract it, and follow `INSTALL.txt` inside.
+In short: copy `dbz-kakarot-save-syncer.asi` and `xinput1_3.dll` into the exe folder of the
 build you play on Windows. Nothing else is needed: the `.asi` is linked against the static C++
 runtime, so no Visual C++ redistributable is required.
 
@@ -28,10 +28,10 @@ Requirements: Visual Studio 2026 (version 18) with the Desktop development with 
 (toolset v145, a Windows 10 SDK or later). Only x64 is supported.
 
 ```
-"C:\Program Files\Microsoft Visual Studio\18\Community\MSBuild\Current\Bin\amd64\MSBuild.exe" kakarot-hd-save-syncer.slnx /p:Configuration=Release /p:Platform=x64
+"C:\Program Files\Microsoft Visual Studio\18\Community\MSBuild\Current\Bin\amd64\MSBuild.exe" dbz-kakarot-save-syncer.slnx /p:Configuration=Release /p:Platform=x64
 ```
 
-Outputs go to `x64\Release\` (`x64\Debug\` for Debug): `kakarot-hd-save-syncer.asi`,
+Outputs go to `x64\Release\` (`x64\Debug\` for Debug): `dbz-kakarot-save-syncer.asi`,
 `kakarot_cli.exe` and `plugin_test.exe`.
 
 ## Test
@@ -88,7 +88,7 @@ powershell -ExecutionPolicy Bypass -File tools\package.ps1 [-TestExe STANDARD_EX
 
 The script rebuilds Release x64, checks that the `.asi` does not depend on the C++ runtime DLLs,
 runs `plugin_test.exe` (and stops if it fails; skipped with a warning unless `KAKAROT_EXE` and
-`KAKAROT_FIXTURES` or the two parameters are set), and writes `dist\kakarot-hd-save-syncer-<version>.zip`
+`KAKAROT_FIXTURES` or the two parameters are set), and writes `dist\dbz-kakarot-save-syncer-<version>.zip`
 with the `.asi`, `xinput1_3.dll`, `INSTALL.txt` and `LICENSE.txt`. The version is read from
 `VERSION`. `INSTALL.txt` is generated from `tools/INSTALL.txt` with the version and the
 loader's version and SHA-256 filled in.
@@ -105,7 +105,7 @@ loader's version and SHA-256 filled in.
 | `docs/` | The design and the save mechanism reference |
 | `third_party/` | Ultimate ASI Loader, redistributed unmodified (see its README) |
 
-The `.asi` project itself (`kakarot-hd-save-syncer.vcxproj`, `dllmain.cpp`) is at the root.
+The `.asi` project itself (`dbz-kakarot-save-syncer.vcxproj`, `dllmain.cpp`) is at the root.
 `x64/`, `obj/`, `out/` and `dist/` are build, test and packaging output and are not tracked.
 
 ## The save key

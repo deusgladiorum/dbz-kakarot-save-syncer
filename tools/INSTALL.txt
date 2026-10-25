@@ -1,4 +1,4 @@
-Kakarot HD Save Syncer @VERSION@
+DBZ Kakarot Save Syncer @VERSION@
 
 DRAGON BALL Z: KAKAROT on Steam has a standard build and an HD build, and each keeps its own
 saves. This plugin keeps them in step: when one build saves, the same slot is written in the
@@ -6,7 +6,7 @@ other build's format, and at game start any newer save from the other build is b
 
 INSTALL
 1. Back up your saves: Steam\userdata\<your Steam id>\851850\remote
-2. Copy kakarot-hd-save-syncer.asi and xinput1_3.dll into the exe folder of the build you
+2. Copy dbz-kakarot-save-syncer.asi and xinput1_3.dll into the exe folder of the build you
    play on Windows:
      Standard: ...\DRAGON BALL Z KAKAROT\AT\Binaries\Win64\
      HD:       ...\DRAGON BALL Z KAKAROT\dlc\Remaster\AT\Binaries\Win64\
@@ -17,15 +17,15 @@ needs nothing: it receives the saves through Steam Cloud. Installing into both b
 also works.
 
 LOG
-kakarot-hd-save-syncer.log, in the same folder as the .asi.
+dbz-kakarot-save-syncer.log, in the same folder as the .asi.
 
 IF THE GAME REPORTS "NO SAVE DATA" OR REFUSES TO SAVE
 Fully restart the Steam client (Steam menu > Exit, then start Steam again), then start the game.
 
 UNINSTALL
-Delete kakarot-hd-save-syncer.asi and xinput1_3.dll from the exe folder (keep xinput1_3.dll if
-another mod uses it). You may also delete kakarot-hd-save-syncer.log and
-kakarot-hd-save-syncer.manifest there. Your saves are untouched.
+Delete dbz-kakarot-save-syncer.asi and xinput1_3.dll from the exe folder (keep xinput1_3.dll if
+another mod uses it). You may also delete dbz-kakarot-save-syncer.log and
+dbz-kakarot-save-syncer.manifest there. Your saves are untouched.
 
 The plugin never deletes a save. Deleting a slot in one build leaves the other build's copy.
 

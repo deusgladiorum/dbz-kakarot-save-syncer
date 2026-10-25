@@ -1,7 +1,7 @@
 # Ultimate ASI Loader
 
 `xinput1_3.dll` in this folder is Ultimate ASI Loader, the DLL that loads `.asi` plugins into a
-game process. The release zip ships it next to `kakarot-hd-save-syncer.asi` so that the plugin
+game process. The release zip ships it next to `dbz-kakarot-save-syncer.asi` so that the plugin
 is loaded when the game starts.
 
 | | |

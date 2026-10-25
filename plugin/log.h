@@ -1,4 +1,4 @@
-// Plugin log: timestamped lines appended to kakarot-hd-save-syncer.log next to the plugin DLL.
+// Plugin log: timestamped lines appended to dbz-kakarot-save-syncer.log next to the plugin DLL.
 //
 // Every line carries local time (ms) and the calling thread id. Lines are formatted into a
 // stack buffer outside the lock, then written with one WriteFile under an SRW lock, so a line

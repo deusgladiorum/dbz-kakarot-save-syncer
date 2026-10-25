@@ -9,7 +9,7 @@ namespace plugin {
 namespace log {
 namespace {
 
-constexpr wchar_t kLogFileName[] = L"kakarot-hd-save-syncer.log";
+constexpr wchar_t kLogFileName[] = L"dbz-kakarot-save-syncer.log";
 constexpr size_t kMaxLine = 1024;
 
 SRWLOCK g_lock = SRWLOCK_INIT;
