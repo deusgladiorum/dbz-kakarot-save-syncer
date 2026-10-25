@@ -1,0 +1,313 @@
+<title>DBZ: Kakarot Game Save &amp; Save Transfer Mechanism</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout: one column of sections. Each section = heading, one figure with a one-line caption, then explanatory prose. Max 880px. */
+  :root {
+    --bg: #f6f5f2;
+    --fg: #1f2328;
+    --muted: #5d6470;
+    --line: #c9ccd1;
+    --panel: #ffffff;
+    --accent: #c2410c;      /* orange: what differs between the two builds, and what the transfer rewrites */
+    --accent-soft: #fbe9df;
+    --ok: #2f7d4f;          /* green: the file is indexed and listed */
+    --font-body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", Consolas, "Courier New", monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #15171a; --fg: #e6e8eb; --muted: #9aa3ad; --line: #3a4048; --panel: #1e2126;
+      --accent: #f0864f; --accent-soft: #3a2518; --ok: #5fbf85; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #15171a; --fg: #e6e8eb; --muted: #9aa3ad; --line: #3a4048; --panel: #1e2126;
+    --accent: #f0864f; --accent-soft: #3a2518; --ok: #5fbf85; color-scheme: dark;
+  }
+  body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 16px; line-height: 1.5;
+         margin: 0; padding-block: 32px 64px; padding-inline: 16px; }
+  main { max-width: 880px; margin: 0 auto; display: grid; gap: 48px; }
+  section { display: grid; gap: 14px; }
+  h1 { font-size: 30px; line-height: 1.15; margin: 0 0 6px; text-wrap: balance; }
+  h2 { font-size: 20px; margin: 0; }
+  p { margin: 0; max-width: 68ch; }
+  .lede { color: var(--muted); font-size: 17px; }
+  .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  figure { margin: 0; display: grid; gap: 8px; }
+  .frame { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 16px; overflow-x: auto; }
+  svg { display: block; max-width: 100%; height: auto; font-family: var(--font-body); }
+  svg text { font-size: 12px; fill: currentColor; }
+  svg .t { font-size: 13px; font-weight: 600; }
+  svg .m { font-family: var(--font-mono); font-size: 11px; }
+  svg .mu { fill: var(--muted); }
+  svg .acc { fill: var(--accent); }
+  svg .ok { fill: var(--ok); }
+  svg .box { fill: var(--panel); stroke: currentColor; stroke-width: 1.2; }
+  svg .box-acc { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1.4; }
+  svg .wire { stroke: currentColor; stroke-width: 1.2; fill: none; }
+  svg .wire-acc { stroke: var(--accent); stroke-width: 1.4; fill: none; }
+  svg .wire-dash { stroke: currentColor; stroke-width: 1.2; fill: none; stroke-dasharray: 4 3; }
+  /* A caption says what the figure shows, in one or two lines, full width, visibly subordinate to the prose below it. */
+  figcaption { color: var(--muted); font-size: 13px; font-style: italic; line-height: 1.45; max-width: none; padding-inline: 2px; }
+  figcaption b { color: var(--fg); font-style: normal; }
+  code { font-family: var(--font-mono); font-size: .9em; background: var(--panel); border: 1px solid var(--line); border-radius: 3px; padding: 0 4px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th, td { text-align: left; vertical-align: top; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+  th { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  td.mono, .mono { font-family: var(--font-mono); font-size: 13px; white-space: nowrap; }
+  .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+  .fact { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 12px 14px; display: grid; gap: 4px; min-width: 0; }
+  .fact .k { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  .fact .v { font-size: 15px; }
+  .fact .v code { white-space: normal; word-break: break-all; }
+  .diff { color: var(--accent); font-weight: 600; }
+  @media (max-width: 600px) { h1 { font-size: 24px; } body { font-size: 15px; } }
+</style>
+
+<main>
+  <header>
+    <div class="eyebrow">Dragon Ball Z: Kakarot on Steam · standard and HD builds</div>
+    <h1>DBZ: Kakarot Game Save &amp; Save Transfer Mechanism</h1>
+    <p class="lede">How each build of the game, meaning the standard version and the HD remaster, which are two separate executables, serializes, encrypts, stores and loads its save files, and what the HD build's Transfer Save Data does to them. Found by reverse engineering.</p>
+  </header>
+
+  <section>
+    <h2>1. The save/load path, per build</h2>
+    <p>Each build runs this path on its own, against its own files (<code>ManualSave0</code> for standard, <code>ManualSaveR0</code> for HD) and its own entries in Steam's index, the per-game list of files Steam knows about. Neither build touches the other's files unless you use Transfer Save Data, the HD build's menu option that imports standard saves.</p>
+    <figure>
+    <div class="frame">
+    <svg viewBox="0 0 1000 300" role="img" aria-label="Five stages from the game to Steam Cloud: the game serializes a GVAS object, encrypts it with AES, hands it to the Steam client through FileWrite, and Steam uploads it. Loading runs the same path backwards, and the existence check consults Steam's index rather than the folder.">
+      <defs>
+        <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+        </marker>
+      </defs>
+      <!-- boxes: x = 10, 220, 430, 640, 850; w = 150; y = 120..190. Arrow labels sit over the 60px gaps, centred at 190, 400, 610, 820. -->
+      <g>
+        <rect class="box" x="10" y="120" width="150" height="70" rx="4"/>
+        <text class="t" x="85" y="150" text-anchor="middle">Game</text>
+        <text class="mu" x="85" y="170" text-anchor="middle">standard or HD build</text>
+
+        <rect class="box" x="220" y="120" width="150" height="70" rx="4"/>
+        <text class="t" x="295" y="150" text-anchor="middle">Save object</text>
+        <text class="mu" x="295" y="170" text-anchor="middle">Unreal GVAS tree</text>
+
+        <rect class="box" x="430" y="120" width="150" height="70" rx="4"/>
+        <text class="t" x="505" y="144" text-anchor="middle">Encrypted file</text>
+        <text class="mu" x="505" y="162" text-anchor="middle">AES-256-ECB</text>
+        <text class="m mu" x="505" y="180" text-anchor="middle">ManualSave0 …</text>
+
+        <rect class="box" x="640" y="120" width="150" height="70" rx="4"/>
+        <text class="t" x="715" y="144" text-anchor="middle">Steam client</text>
+        <text class="mu" x="715" y="162" text-anchor="middle">index + save folder</text>
+        <text class="m mu" x="715" y="180" text-anchor="middle">remotecache.vdf</text>
+
+        <rect class="box" x="850" y="120" width="150" height="70" rx="4"/>
+        <text class="t" x="925" y="150" text-anchor="middle">Steam Cloud</text>
+        <text class="mu" x="925" y="170" text-anchor="middle">sync to other devices</text>
+      </g>
+      <!-- save direction: arrows in the upper half of the gaps, labels above -->
+      <g>
+        <text class="t mu" x="10" y="100">Save</text>
+        <line class="wire" x1="160" y1="138" x2="220" y2="138" marker-end="url(#ar)"/>
+        <text x="190" y="110" text-anchor="middle">serialize</text>
+        <line class="wire" x1="370" y1="138" x2="430" y2="138" marker-end="url(#ar)"/>
+        <text x="400" y="96" text-anchor="middle">pad to 16 bytes,</text>
+        <text x="400" y="110" text-anchor="middle">encrypt</text>
+        <line class="wire" x1="580" y1="138" x2="640" y2="138" marker-end="url(#ar)"/>
+        <text class="m" x="610" y="96" text-anchor="middle">FileWrite</text>
+        <text x="610" y="110" text-anchor="middle">file + index entry</text>
+        <line class="wire" x1="790" y1="138" x2="850" y2="138" marker-end="url(#ar)"/>
+        <text x="820" y="110" text-anchor="middle">upload</text>
+      </g>
+      <!-- load direction: arrows in the lower half of the gaps, labels below -->
+      <g>
+        <text class="t mu" x="10" y="240">Load</text>
+        <line class="wire" x1="220" y1="172" x2="160" y2="172" marker-end="url(#ar)"/>
+        <text x="190" y="222" text-anchor="middle">apply to</text>
+        <text x="190" y="236" text-anchor="middle">game state</text>
+        <line class="wire" x1="430" y1="172" x2="370" y2="172" marker-end="url(#ar)"/>
+        <text x="400" y="222" text-anchor="middle">decrypt, parse,</text>
+        <text x="400" y="236" text-anchor="middle">check version stamp</text>
+        <line class="wire-acc" x1="640" y1="172" x2="580" y2="172" marker-end="url(#ar)"/>
+        <text class="m acc" x="610" y="222" text-anchor="middle">FileExists</text>
+        <text class="acc" x="610" y="236" text-anchor="middle">asks the index, not the folder</text>
+        <text class="m acc" x="610" y="250" text-anchor="middle">then FileRead</text>
+        <line class="wire" x1="850" y1="172" x2="790" y2="172" marker-end="url(#ar)"/>
+        <text x="820" y="222" text-anchor="middle">download</text>
+      </g>
+    </svg>
+    </div>
+    <figcaption>Save (arrows above the boxes) and load (arrows below) for one build, from the game to Steam Cloud.</figcaption>
+    </figure>
+    <p>On save, the game state is serialized into an Unreal GVAS object and encrypted using AES-256 ECB via a key embedded in the build's executable. Both standard and HD builds use the same key. The encrypted file is not written to the disk directly. Instead, the game calls Steam's Remote Storage API, which separately writes to both Steam's per-game file index (<code>remotecache.vdf</code>) and the game's save directory. On load, the same process happens in reverse, with the existence check for the chosen slot consulting Steam's index rather than the folder. <b>A file manually copied into the folder without also storing it in the index would fail to load.</b></p>
+  </section>
+
+  <section>
+    <h2>2. Save file layout and transfer explanation</h2>
+    <figure>
+    <div class="frame">
+    <svg viewBox="0 0 1000 105" role="img" aria-label="A game save file is a GVAS tag, an engine header that differs by build, a version stamp that differs by build, the game state which is identical in both builds, and zero padding.">
+      <text class="t mu" x="10" y="22">Game save (ATSaveGame)</text>
+      <!-- segments y=40..92 -->
+      <rect class="box" x="10" y="40" width="70" height="52" rx="3"/>
+      <text class="m" x="45" y="70" text-anchor="middle">GVAS</text>
+
+      <rect class="box-acc" x="80" y="40" width="210" height="52" rx="3"/>
+      <text class="t acc" x="185" y="60" text-anchor="middle">engine header</text>
+      <text class="m acc" x="185" y="78" text-anchor="middle">Unreal 4.21 / 4.27</text>
+
+      <rect class="box-acc" x="290" y="40" width="150" height="52" rx="3"/>
+      <text class="t acc" x="365" y="60" text-anchor="middle">version stamp</text>
+      <text class="m acc" x="365" y="78" text-anchor="middle">std 560 · HD 320</text>
+
+      <rect class="box" x="440" y="40" width="460" height="52" rx="3"/>
+      <text class="t" x="670" y="60" text-anchor="middle">game state</text>
+      <text class="mu" x="670" y="78" text-anchor="middle">byte-identical in both builds</text>
+
+      <rect class="box" x="900" y="40" width="90" height="52" rx="3"/>
+      <text class="m" x="945" y="60" text-anchor="middle">zero pad</text>
+      <text class="m mu" x="945" y="78" text-anchor="middle">to ×16</text>
+    </svg>
+    </div>
+    <div class="frame">
+    <svg viewBox="0 0 1100 105" role="img" aria-label="A system save file is a GVAS tag, an engine header that differs by build, a version stamp that differs by build, three standard-only flags, the other consent and notice flags, Option, Headers per slot, DLC, an IsConversion flag that exists only in the HD build, the quest lists, and zero padding.">
+      <text class="t mu" x="10" y="22">System save (ATSaveSystem)</text>
+      <rect class="box" x="10" y="40" width="60" height="52" rx="3"/>
+      <text class="m" x="40" y="70" text-anchor="middle">GVAS</text>
+
+      <rect class="box-acc" x="70" y="40" width="140" height="52" rx="3"/>
+      <text class="t acc" x="140" y="60" text-anchor="middle">engine header</text>
+      <text class="m acc" x="140" y="78" text-anchor="middle">4.21 / 4.27</text>
+
+      <rect class="box-acc" x="210" y="40" width="100" height="52" rx="3"/>
+      <text class="t acc" x="260" y="60" text-anchor="middle">version stamp</text>
+      <text class="m acc" x="260" y="78" text-anchor="middle">560 / 320</text>
+
+      <rect class="box-acc" x="310" y="40" width="140" height="52" rx="3"/>
+      <text class="t acc" x="380" y="60" text-anchor="middle">3 std-only flags</text>
+      <text class="m acc" x="380" y="78" text-anchor="middle">absent in HD</text>
+
+      <rect class="box" x="450" y="40" width="140" height="52" rx="3"/>
+      <text class="t" x="520" y="60" text-anchor="middle">other flags</text>
+      <text class="mu" x="520" y="78" text-anchor="middle">EULA, notices</text>
+
+      <rect class="box" x="590" y="40" width="80" height="52" rx="3"/>
+      <text class="t" x="630" y="60" text-anchor="middle">Option</text>
+      <text class="mu" x="630" y="78" text-anchor="middle">settings</text>
+
+      <rect class="box" x="670" y="40" width="160" height="52" rx="3"/>
+      <text class="t" x="750" y="60" text-anchor="middle">Headers[slot] …</text>
+      <text class="mu" x="750" y="78" text-anchor="middle">thumbnail, play time, level</text>
+
+      <rect class="box" x="830" y="40" width="60" height="52" rx="3"/>
+      <text class="t" x="860" y="66" text-anchor="middle">DLC</text>
+
+      <rect class="box-acc" x="890" y="40" width="110" height="52" rx="3"/>
+      <text class="t acc" x="945" y="60" text-anchor="middle">IsConversion</text>
+      <text class="m acc" x="945" y="78" text-anchor="middle">HD only</text>
+
+      <rect class="box" x="1000" y="40" width="50" height="52" rx="3"/>
+      <text class="t" x="1025" y="60" text-anchor="middle">quest</text>
+      <text class="mu" x="1025" y="78" text-anchor="middle">lists</text>
+
+      <rect class="box" x="1050" y="40" width="40" height="52" rx="3"/>
+      <text class="m" x="1070" y="60" text-anchor="middle">pad</text>
+      <text class="m mu" x="1070" y="78" text-anchor="middle">×16</text>
+    </svg>
+    </div>
+    <figcaption>Decrypted layout of a game save and a system save, not to scale. Orange: the fields that differ between the builds. On disk both files are AES-encrypted in 16-byte blocks.</figcaption>
+    </figure>
+    <p>The HD build's <b>Transfer Save Data</b> rewrites only the orange parts and carries everything else over unchanged. For a game save that is the engine header and the version stamp. For the system save it also drops the three flags the HD class does not have and sets <b>IsConversion</b>, and "carrying over" means merging into the existing HD system save, which is how the slot's <b>Headers</b> entry arrives there.</p>
+  </section>
+
+  <section>
+    <h2>3. Which file holds what</h2>
+    <figure>
+    <div class="frame" style="padding: 0 16px;">
+      <table>
+        <thead><tr><th>Standard</th><th>HD</th><th>Slot</th><th>Contents</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">ManualSave0 … 9</td><td class="mono">ManualSaveR0 … 9</td><td class="mono">0 … 9</td><td>Game save (<span class="mono">ATSaveGame</span>): characters, levels, HP, items, quests, world flags.</td></tr>
+          <tr><td class="mono">AutoSave0</td><td class="mono">AutoSaveR0</td><td class="mono">10</td><td>Game save, same structure as a manual save.</td></tr>
+          <tr><td class="mono">SystemSave0</td><td class="mono">SystemSaveR0</td><td class="mono">11</td><td>System save (<span class="mono">ATSaveSystem</span>): the version stamp and the EULA and notice flags, <b>Option</b> (settings), <b>Headers[slot]</b>, one per used slot, holding level, chapter, play time, timestamp, character and the thumbnail, <b>DLC</b>, quest completion lists, and in HD only an <b>IsConversion</b> flag. <span class="diff">The in-game save list is drawn from Headers, not from the game save files.</span></td></tr>
+          <tr><td class="mono">C_Save1</td><td class="mono">—</td><td class="mono">—</td><td>Card game, separate format and version, not part of the transfer.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <figcaption>File names, slot numbers and contents, per build.</figcaption>
+    </figure>
+    <p>Only the <code>R</code> suffix separates the two builds' file names, and both builds keep their files in the same folder. Because the list reads <b>Headers</b> from the system save, copying a game save alone leaves the list showing the old thumbnail and play time, or no entry at all for a slot the system save has never seen.</p>
+  </section>
+
+  <section>
+    <h2>4. Native transfer versus a plain file copy</h2>
+    <figure>
+    <div class="frame">
+    <svg viewBox="0 0 1000 250" role="img" aria-label="Two lanes. Native transfer: FileRead and decrypt the standard file, rewrite header and version stamp in memory, FileWrite the HD file, which also indexes it, and merge the slot's Headers entry into the HD system save. Plain copy: CopyFile to the HD name leaves the index and the system save unchanged.">
+      <defs>
+        <marker id="ar3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+          <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+        </marker>
+      </defs>
+      <!-- lane A -->
+      <text class="t" x="10" y="26">Native "Transfer Save Data" (HD main menu)</text>
+      <rect class="box" x="10" y="44" width="150" height="56" rx="4"/>
+      <text class="m" x="85" y="68" text-anchor="middle">ManualSave0</text>
+      <text class="mu" x="85" y="86" text-anchor="middle">standard file</text>
+      <line class="wire" x1="160" y1="72" x2="250" y2="72" marker-end="url(#ar3)"/>
+      <text class="m" x="205" y="60" text-anchor="middle">FileRead</text>
+      <text x="205" y="94" text-anchor="middle">decrypt</text>
+      <rect class="box-acc" x="250" y="44" width="200" height="56" rx="4"/>
+      <text class="t acc" x="350" y="66" text-anchor="middle">in memory</text>
+      <text class="m acc" x="350" y="86" text-anchor="middle">header → 4.27, stamp → 320</text>
+      <line class="wire" x1="450" y1="72" x2="540" y2="72" marker-end="url(#ar3)"/>
+      <text class="m" x="495" y="60" text-anchor="middle">FileWrite</text>
+      <text x="495" y="94" text-anchor="middle">encrypt</text>
+      <rect class="box" x="540" y="44" width="150" height="56" rx="4"/>
+      <text class="m" x="615" y="68" text-anchor="middle">ManualSaveR0</text>
+      <text class="ok" x="615" y="86" text-anchor="middle">file + index entry</text>
+      <line class="wire" x1="690" y1="72" x2="780" y2="72" marker-end="url(#ar3)"/>
+      <text x="735" y="60" text-anchor="middle">merge Headers</text>
+      <rect class="box" x="780" y="44" width="210" height="56" rx="4"/>
+      <text class="m" x="885" y="68" text-anchor="middle">SystemSaveR0</text>
+      <text class="ok" x="885" y="86" text-anchor="middle">slot listed with its thumbnail</text>
+
+      <!-- divider -->
+      <line class="wire-dash" x1="10" y1="124" x2="990" y2="124"/>
+
+      <!-- lane B -->
+      <text class="t" x="10" y="152">Plain copy and rename</text>
+      <rect class="box" x="10" y="170" width="150" height="56" rx="4"/>
+      <text class="m" x="85" y="194" text-anchor="middle">ManualSave0</text>
+      <text class="mu" x="85" y="212" text-anchor="middle">standard file</text>
+      <line class="wire" x1="160" y1="198" x2="540" y2="198" marker-end="url(#ar3)"/>
+      <text class="m" x="350" y="186" text-anchor="middle">CopyFile</text>
+      <text class="mu" x="350" y="218" text-anchor="middle">bytes unchanged, old header and stamp kept</text>
+      <text class="mu" x="350" y="232" text-anchor="middle">(observed to load in both builds)</text>
+      <rect class="box" x="540" y="170" width="150" height="56" rx="4"/>
+      <text class="m" x="615" y="194" text-anchor="middle">ManualSaveR0</text>
+      <text class="mu" x="615" y="212" text-anchor="middle">file only, not indexed</text>
+      <rect class="box" x="780" y="170" width="210" height="56" rx="4"/>
+      <text class="m" x="885" y="194" text-anchor="middle">SystemSaveR0</text>
+      <text class="mu" x="885" y="212" text-anchor="middle">untouched, list unchanged</text>
+      <text class="mu" x="735" y="202" text-anchor="middle">✗</text>
+    </svg>
+    </div>
+    <figcaption>The same slot moved from standard to HD by the HD build's transfer (top) and by a plain copy (bottom). Orange: what the transfer rewrites. Green: indexed and listed.</figcaption>
+    </figure>
+    <p>The index decides whether a slot loads. A copied file for a slot the HD build never saved is not found. A copied file whose slot name was already indexed loads, but the list keeps that slot's old Headers entry. The system save is untouched either way.</p>
+  </section>
+
+  <section>
+    <h2>Facts worth remembering</h2>
+    <div class="facts">
+      <div class="fact"><div class="k">Save folder</div><div class="v"><code>&lt;Steam&gt;\userdata\&lt;user&gt;\851850\remote</code> with the index in <code>remotecache.vdf</code> one level up.</div></div>
+      <div class="fact"><div class="k">Version stamps</div><div class="v">Standard: 544 then 560. HD: 304 then 320. Each build restamps its own value on every save; the number moves with game patches.</div></div>
+      <div class="fact"><div class="k">Version acceptance (HD)</div><div class="v">Loads if the stamp is ≥ 400 or ≤ 320, rejects 321 to 399 as a version error. Nothing else reads it. The standard build's rule has not been traced.</div></div>
+      <div class="fact"><div class="k">Encryption</div><div class="v">Unreal's stock <code>FAES</code>: AES-256-ECB, key = first 32 characters of a 128-character string embedded in each exe. Same key in both builds.</div></div>
+      <div class="fact"><div class="k">Load errors</div><div class="v">The game distinguishes: not found (index miss), corrupt, out of storage, version, DLC data not owned.</div></div>
+      <div class="fact"><div class="k">Engine versions</div><div class="v">Standard build is Unreal 4.21.2, HD build is 4.27.2. Each loads the other's header without complaint.</div></div>
+    </div>
+  </section>
+</main>
