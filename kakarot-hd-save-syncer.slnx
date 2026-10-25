@@ -1,0 +1,26 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="cli/kakarot_cli.vcxproj" Id="ca38fa5e-ede1-40d9-94c0-23ab4f043322">
+    <Platform Solution="*|x86" Project="x64" />
+    <Build Solution="*|x86" Project="false" />
+  </Project>
+  <Project Path="core/kakarot_core.vcxproj" Id="08e3c4df-c5db-42af-943b-d42cbda91213">
+    <Platform Solution="*|x86" Project="x64" />
+    <Build Solution="*|x86" Project="false" />
+  </Project>
+  <Project Path="kakarot-hd-save-syncer.vcxproj" Id="fcf38bc1-f68a-4baa-ae63-a94f161ff519">
+    <Platform Solution="*|x86" Project="x64" />
+    <Build Solution="*|x86" Project="false" />
+  </Project>
+  <Project Path="plugin/kakarot_plugin.vcxproj" Id="10824bd3-8bfd-4906-81ee-30eb6da1d6dc">
+    <Platform Solution="*|x86" Project="x64" />
+    <Build Solution="*|x86" Project="false" />
+  </Project>
+  <Project Path="plugin_test/plugin_test.vcxproj" Id="67fda9eb-d978-421e-9b13-bed481062104">
+    <Platform Solution="*|x86" Project="x64" />
+    <Build Solution="*|x86" Project="false" />
+  </Project>
+</Solution>
