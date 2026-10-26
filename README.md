@@ -9,9 +9,12 @@ forget it.
 
 ## Quick install
 
-1. Go to the [Releases page](https://github.com/deusgladiorum/dbz-kakarot-save-syncer/releases)
+1. Back up your saves by copying this folder somewhere safe. It holds the saves of both the
+   standard and HD versions:
+   `...\Steam\userdata\<your Steam id>\851850\remote`
+2. Go to the [Releases page](https://github.com/deusgladiorum/dbz-kakarot-save-syncer/releases)
    and download the latest `dbz-kakarot-save-syncer-<version>.zip`.
-2. Extract all of its contents into the HD version's folder:
+3. Extract all of its contents into the HD version's folder:
    `...\steamapps\common\DRAGON BALL Z KAKAROT\dlc\Remaster\AT\Binaries\Win64\`
 
 That's it. Play either version as normal. Steam Cloud must be enabled for the game, which it is
